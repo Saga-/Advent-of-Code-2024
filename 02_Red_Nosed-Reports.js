@@ -1,55 +1,50 @@
 import { readFileSync } from "fs";
 
 const FILE = "./02_input.txt";
-const SAFEADJ = 3; // The maximum increase/decrease between each value (in a row)
 
 const file = readFileSync(FILE, "utf-8");
 
-const parsedArray = file.split("\n");
+const allRecords = file
+  .replace(/\r/g, "")
+  .split("\n")
+  .filter((x) => x != "")
+  .map((x) => x.split(" ").map(Number));
 
-console.log(parsedArray);
+let validReportCount = 0;
 
-let validReports = 0;
+allRecords.forEach((record) => {
+  if (isValidRecord(record)) {
+    validReportCount++;
+    return;
+  }
 
-for (let i = 0; i < parsedArray.length; i++) {
-  debugger;
-  const recordsArray = parsedArray[i].split(" ").map((x) => +x);
-  let validIncreasing = false;
-  let validDecreasing = false;
-
-  let increasingCounter = 0;
-  let decreasingCounter = 0;
-
-  for (let j = 0; j < recordsArray.length; j++) {
-    const currentVal = recordsArray[j];
-    const nextVal = recordsArray[j + 1];
-
-    if (
-      currentVal > nextVal &&
-      currentVal - nextVal >= 1 &&
-      currentVal - nextVal <= 3
-    ) {
-      increasingCounter++;
-      validDecreasing = false;
-    } else if (
-      currentVal < nextVal &&
-      nextVal - currentVal >= 1 &&
-      nextVal - currentVal <= 3
-    ) {
-      decreasingCounter++;
-      validIncreasing = false;
-    } else {
-      validIncreasing = false;
-      validDecreasing = false;
+  for (let i = 0; i < record.length; i++) {
+    const modifiedRecord = [...record.slice(0, i), ...record.slice(i + 1)];
+    if (isValidRecord(modifiedRecord)) {
+      validReportCount++;
+      return;
     }
   }
+});
 
-  if (
-    increasingCounter === recordsArray.length - 1 ||
-    decreasingCounter === recordsArray.length - 1
-  ) {
-    validReports += 1;
-  }
+console.log(validReportCount);
+
+function isSafeIncreasing(curr, next) {
+  return curr < next && next - curr >= 1 && next - curr <= 3;
 }
 
-console.log(validReports);
+function isSafeDecreasing(curr, next) {
+  return curr > next && curr - next >= 1 && curr - next <= 3;
+}
+
+function isValidRecord(record) {
+  let increasing = true;
+  let decreasing = true;
+
+  for (let i = 0; i < record.length - 1; i++) {
+    if (!isSafeIncreasing(record[i], record[i + 1])) increasing = false;
+    if (!isSafeDecreasing(record[i], record[i + 1])) decreasing = false;
+  }
+
+  return increasing || decreasing;
+}
