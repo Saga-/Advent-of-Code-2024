@@ -4,7 +4,7 @@ const FILE = "./02_input.txt";
 
 const file = readFileSync(FILE, "utf-8");
 
-const allRecords = file
+const allRecords: number[][] = file
   .replace(/\r/g, "")
   .split("\n")
   .filter((x) => x != "")
@@ -12,7 +12,7 @@ const allRecords = file
 
 let validReportCount = 0;
 
-allRecords.forEach((record) => {
+allRecords.forEach((record: number[]) => {
   if (isValidRecord(record)) {
     validReportCount++;
     return;
@@ -29,15 +29,15 @@ allRecords.forEach((record) => {
 
 console.log(validReportCount);
 
-function isSafeIncreasing(curr, next) {
+function isSafeIncreasing(curr: number, next: number): boolean {
   return curr < next && next - curr >= 1 && next - curr <= 3;
 }
 
-function isSafeDecreasing(curr, next) {
+function isSafeDecreasing(curr: number, next: number): boolean {
   return curr > next && curr - next >= 1 && curr - next <= 3;
 }
 
-function isValidRecord(record) {
+function isValidRecord(record: number[]): boolean {
   let increasing = true;
   let decreasing = true;
 
